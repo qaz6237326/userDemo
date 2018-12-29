@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/lib/vue.js"></script>
+    <script src="/lib/axios.min.js"></script>
+    <link rel="stylesheet" href="/css/css.css">
+</head>
+<body>
+
+<div id="main">
+    <div style="width: 500px;height:auto;padding: 20px;margin: 40px;border: 1px solid #ccc;">
+        <p v-if="message">
+            <span :style="resultFlag ? 'color: green;' : 'color: red;'">{{message}}</span>
+        </p>
+        <p>
+            用户名：<input type="text" v-model="obj.name">
+        </p>
+        <p>
+            密码：<input type="password" v-model="obj.password">
+        </p>
+        <p>
+            <button type="button" @click="login()">登录</button>
+        </p>
+        <ul>
+            <li v-for="item in userInfo">
+                <p>ID:{{item.id}}</p>
+                <p>姓名：{{item.name}}</p>
+                <p>年龄：{{item.age}}</p>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div>
+            <button @click="addUser(newUser)">添加新用户</button>
+            <p>姓名：<input type="text" v-model="newUser.name"></p>
+            <p>密码：<input type="text" v-model="newUser.password"></p>
+            <p>年龄：<input type="text" v-model="newUser.age"></p>
+        </div>
+        <p style="text-align: center">
+            <button style="padding:5px 8px;" @click="getUserList()">查询</button>
+        </p>
+        <table style="width: 100%;" border="1">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in userList">
+                <td class="text-center">{{item.id}}</td>
+                <td>{{item.name}}</td>
+                <td class="text-center">{{item.age}}</td>
+                <td class="text-center">{{item.createTime}}</td>
+                <td class="text-center">{{item.updateTime}}</td>
+                <td class="text-center">
+                    <button @click="openUpdateModal(item)">修改</button>
+                    <button @click="deleteUser(item)">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div v-if="updateModal.show" class="updateModalStyle">
+        <h3>修改用户信息</h3>
+        <p>姓名：<input type="text" v-model="updateUser.name"></p>
+        <p>密码：<input type="text" v-model="updateUser.password"></p>
+        <p>年龄：<input type="text" v-model="updateUser.age"></p>
+        <button @click="updateModal.ok(updateUser)">修改</button>
+        <button @click="updateModal.show = false">取消</button>
+    </div>
+
+
+</div>
+
+<script>
+
+    var vm = new Vue({
+        el: '#main',
+        data (){
+            let _this = this;
+            return {
+                message: '',
+                newUser: {
+                    name: '',
+                    password: '',
+                    age: ''
+                },
+                updateUser: {
+                    name: '',
+                    password: '',
+                    age: ''
+                },
+                obj: {
+                    name: '',
+                    password: ''
+                },
+                userInfo: {},
+                resultFlag: false,
+                userList: [],
+                updateModal: {
+                    show: false,
+                    ok (user) {
+                        _this.updateUserFun(user)
+                    }
+                }
+            }
+        },
+        mounted() {
+            this.getUserList()
+        },
+        methods: {
+            login () {
+                let _this = this
+                console.log(this.obj)
+                axios.post('/loginApi', this.obj)
+                    .then((res) => {
+                        _this.resultFlag = res.data.result;
+                        _this.message = res.data.message;
+                        if (res.data.result) {
+                            _this.userInfo = res.data.data;
+                            axios.defaults.headers.common['Authorization'] = res.data.token
+                        } else {
+
+                        }
+                        console.log(res.data)
+                    })
+            },
+            getUserList() {
+                let _this = this;
+                axios.get('/allUser')
+                    .then((res) => {
+                        console.log(res)
+                        if (res.data.result) {
+                            _this.userList = res.data.data
+                        } else {
+                        }
+                    })
+            },
+            openUpdateModal(item) {
+                console.log(item)
+                let _this = this;
+                _this.updateUser = {...item};
+                _this.updateModal.show = true;
+            },
+            updateUserFun(user) {
+                let _this = this;
+                axios.post('/updateUser', user)
+                    .then((res) => {
+                        console.log(res)
+                        if (res.data.result) {
+                            _this.getUserList()
+                        } else {
+                        }
+                    })
+            },
+            addUser(item) {
+                let _this = this;
+                axios.post('/addUser', item)
+                    .then((res) => {
+                        console.log(res)
+                        if (res.data.result) {
+                            alert(res.data.message);
+                            _this.getUserList()
+                        } else {
+                        }
+                    })
+            },
+            deleteUser(item) {
+                let _this = this;
+                axios.post('/deleteUser', item)
+                    .then((res) => {
+                        console.log(res)
+                        if (res.data.result) {
+                            _this.getUserList()
+                        } else {
+                        }
+                    })
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
