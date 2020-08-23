@@ -1,10 +1,11 @@
 
 const db = require('../db/login');
+const { urlPrefix } = require('./prefix');
 
 module.exports = (app) => {
     let body;
     let json;
-    app.post('/loginApi', function(req, res) {
+    app.post(urlPrefix + '/loginApi', function(req, res) {
         console.log(req.body)
         body = req.body;
         if(!body.name || !body.password) {

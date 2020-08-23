@@ -81,7 +81,7 @@
 </div>
 
 <script>
-
+    const urlPrefix = '/api/v1'
     var vm = new Vue({
         el: '#main',
         data (){
@@ -120,7 +120,7 @@
             login () {
                 let _this = this
                 console.log(this.obj)
-                axios.post('/loginApi', this.obj)
+                axios.post(urlPrefix + '/loginApi', this.obj)
                     .then((res) => {
                         _this.resultFlag = res.data.result;
                         _this.message = res.data.message;
@@ -135,7 +135,7 @@
             },
             getUserList() {
                 let _this = this;
-                axios.get('/allUser')
+                axios.get(urlPrefix + '/allUser')
                     .then((res) => {
                         console.log(res)
                         if (res.data.result) {
@@ -152,7 +152,7 @@
             },
             updateUserFun(user) {
                 let _this = this;
-                axios.post('/updateUser', user)
+                axios.post(urlPrefix + '/updateUser', user)
                     .then((res) => {
                         console.log(res)
                         if (res.data.result) {
@@ -163,7 +163,7 @@
             },
             addUser(item) {
                 let _this = this;
-                axios.post('/addUser', item)
+                axios.post(urlPrefix + '/addUser', item)
                     .then((res) => {
                         console.log(res)
                         if (res.data.result) {
@@ -175,7 +175,7 @@
             },
             deleteUser(item) {
                 let _this = this;
-                axios.post('/deleteUser', item)
+                axios.post(urlPrefix + '/deleteUser', item)
                     .then((res) => {
                         console.log(res)
                         if (res.data.result) {

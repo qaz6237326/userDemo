@@ -3,11 +3,12 @@
  * @param app express实例
  * */
 const userDB = require('../db/user');
+const { urlPrefix } = require('./prefix');
 
 module.exports = (app) => {
     let body;
     let json;
-    app.get('/allUser', (req, res) => {
+    app.get(urlPrefix + '/allUser', (req, res) => {
         userDB.queryAllUserDB()
             .then(data => {
                 if (data) {
@@ -20,7 +21,7 @@ module.exports = (app) => {
                 }
             })
     });
-    app.post('/addUser', (req, res) => {
+    app.post(urlPrefix + '/addUser', (req, res) => {
         body = req.body;
         if (!body.name || !body.password) {
             json = {
@@ -41,7 +42,7 @@ module.exports = (app) => {
                 })
         }
     });
-    app.post('/updateUser', (req, res) => {
+    app.post(urlPrefix + '/updateUser', (req, res) => {
         body = req.body;
         if (!body.name || !body.password) {
             json = {
@@ -62,7 +63,7 @@ module.exports = (app) => {
                 })
         }
     });
-    app.post('/deleteUser', (req, res) => {
+    app.post(urlPrefix + '/deleteUser', (req, res) => {
         body = req.body;
         userDB.deleteUserDB(body)
             .then(data => {
